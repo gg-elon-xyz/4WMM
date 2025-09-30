@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>payment realese🗳️</title>
+  <title>معاملة كازاواليت</title>
   <style>
     body {
       margin: 0;
@@ -41,16 +41,21 @@
     .status.processing .status-icon {
       color: #ffa500;
     }
+    .order-number {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: #000000;
+      background-color: #ffffff;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
     .card {
       background-color: #ffffff;
       color: #000000;
       border-radius: 10px;
       padding: 20px;
-      display: none;
-    }
-    .card h2 {
-      text-align: center;
-      margin-bottom: 20px;
     }
     .row {
       margin-bottom: 15px;
@@ -61,33 +66,45 @@
     .value {
       margin-top: 5px;
     }
-    .button {
+    .popup {
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
       background-color: #ffffff;
-      color: #008000;
-      border: none;
-      padding: 12px 20px;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 30px;
-      display: block;
-      width: 100%;
+      color: #000000;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      max-width: 90%;
+      text-align: center;
+      z-index: 999;
     }
-    .note {
-      background-color: #f0f0f0;
-      color: #333;
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 20px;
+    .popup h3 {
+      margin-top: 0;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .popup p {
+      margin: 10px 0;
       font-size: 14px;
+    }
+    .popup button {
+      background-color: #008000;
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="logo">
-      <img src="IMG_8379.png" alt="شعار كازاواليت">
+      <img src="kazawallet-logo.png" alt="شعار كازاواليت">
     </div>
 
     <div class="status-bar">
@@ -96,15 +113,15 @@
         <div>التحقق</div>
         <div>مكتمل</div>
       </div>
-      <div class="status processing">
-        <div class="status-icon">⏳</div>
-        <div>الدفع</div>
-        <div>قيد المعالجة</div>
-      </div>
       <div class="status completed">
         <div class="status-icon">✔️</div>
-        <div>الهوية</div>
+        <div>الدفع</div>
         <div>مكتمل</div>
+      </div>
+      <div class="status processing">
+        <div class="status-icon">⏳</div>
+        <div>المعالجة</div>
+        <div>قيد التنفيذ</div>
       </div>
       <div class="status processing">
         <div class="status-icon">⏳</div>
@@ -113,23 +130,20 @@
       </div>
     </div>
 
-    <button class="button" onclick="document.querySelector('.card').style.display='block'">
-      التحقق من حالة الدفع
-    </button>
+    <div class="order-number">رقم الطلب #18222173</div>
 
     <div class="card">
-      <h2>رقم الطلب #18222173</h2>
       <div class="row">
         <div class="label">قيمة الدفع</div>
         <div class="value">$7500</div>
       </div>
       <div class="row">
         <div class="label">المبلغ المستلم</div>
-        <div class="value">شبكة بيتكوين</div>
+        <div class="value">$7500</div>
       </div>
       <div class="row">
-        <div class="label">عنوان المحفظة (BEP20)</div>
-        <div class="value">0x7107A5F411586c95140FAF48475370022a29a17a</div>
+        <div class="label">عنوان المحفظة</div>
+        <div class="value">uSDEP</div>
       </div>
       <div class="row">
         <div class="label">البلوكتشين المختار</div>
@@ -139,12 +153,20 @@
         <div class="label">رسوم الشبكة</div>
         <div class="value">$15 (رسوم إلزامية لضمان الأمان والامتثال القانوني)</div>
       </div>
-      <div class="note">
-        تُستخدم رسوم الشبكة البالغة 15 دولارًا لضمان سلامة المعاملة وتوثيقها قانونيًا.  
-        تؤكد هذه الرسوم أن مبلغ 7500 دولار قد تم دفعه بالكامل،  
-        ويجب على المستخدم الذي يمتلك عنوان BEP20 تأكيد الاستلام لإتمام المعاملة.
-      </div>
+    </div>
+
+    <div class="popup" id="feePopup">
+      <h3>خطأ في تقليل الرسوم</h3>
+      <p>تحتاج فقط إلى دفع $15 لإتمام هذه المعاملة.</p>
+      <button onclick="document.getElementById('feePopup').style.display='none'">موافق</button>
     </div>
   </div>
+
+  <script>
+    // Show popup automatically after page load
+    window.onload = function() {
+      document.getElementById('feePopup').style.display = 'block';
+    };
+  </script>
 </body>
 </html>
