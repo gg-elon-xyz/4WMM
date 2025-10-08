@@ -1,153 +1,380 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>تأكيد السحب</title>
+  <title>USDT Dashboard</title>
+  <link href="https://fonts.googleapis.com/css?family=Segoe+UI:400,700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary-yellow: #f0b90b;
+      --dashboard-bg: #17181c;
+      --panel-bg: #23252b;
+      --text-main: #fff;
+      --text-muted: #bdbdbd;
+      --green: #16c784;
+      --danger: #ff4343;
+      --border-radius: 18px;
+    }
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f5f7fa;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      background: linear-gradient(135deg, #23252b 0%, #16171a 100%);
       margin: 0;
-      padding: 0;
-      color: #333;
-      direction: rtl;
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
     }
     .container {
-      max-width: 420px;
-      margin: 40px auto;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
-      padding: 24px;
-    }
-    .logo {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .logo img {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      object-fit: contain;
-    }
-    .title {
-      font-size: 20px;
-      font-weight: 600;
-      text-align: center;
-      margin-bottom: 16px;
-    }
-    .details {
-      font-size: 15px;
-      line-height: 1.8;
-      margin-bottom: 20px;
-    }
-    .details strong {
-      display: inline-block;
-      width: 140px;
-    }
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      background-color: #0052ff;
-      color: white;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .btn:disabled {
-      background-color: #999;
-      cursor: not-allowed;
-    }
-    .spinner {
-      display: none;
-      margin: 20px auto;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #0052ff;
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    .modal {
-      display: none;
-      background: rgba(0,0,0,0.6);
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      justify-content: center;
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
       align-items: center;
+      justify-content: center;
     }
-    .modal-content {
-      background: white;
-      padding: 24px;
-      border-radius: 12px;
-      max-width: 360px;
+    .dashboard-card {
+      background: var(--panel-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 6px 30px rgba(0,0,0,0.18);
+      padding: 40px 32px 32px 32px;
+      width: 410px;
+      min-height: 520px;
+      position: relative;
       text-align: center;
+      overflow: hidden;
     }
-    .modal-content h3 {
+    /* Binance-style header */
+    .dashboard-header {
+      position: absolute;
+      left: 24px;
+      top: 24px;
+      background: linear-gradient(90deg, var(--primary-yellow) 70%, #fff 170%);
+      color: #16171a;
+      font-weight: bold;
+      border-radius: 12px;
+      padding: 8px 16px;
+      box-shadow: 0 2px 8px rgba(240,185,11,0.10);
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      z-index: 2;
+    }
+    .binance-logo {
+      width: 20px;
+      height: 20px;
+      margin-right: 7px;
+    }
+    .hidden { display: none !important; }
+    /* Registration Form */
+    .registration-form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-top: 52px;
+    }
+    .registration-form input {
+      padding: 13px 14px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      background: #18191d;
+      color: var(--text-main);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.09);
+      transition: background 0.2s;
+    }
+    .registration-form input:focus {
+      background: #212227;
+    }
+    .registration-form label {
+      font-size: 15px;
+      color: var(--text-muted);
+      text-align: left;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    .registration-form button {
+      background: var(--primary-yellow);
+      color: #16171a;
+      border: none;
+      padding: 14px 0;
+      border-radius: 8px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.22s;
+    }
+    .registration-form button:hover {
+      background: #ffd429;
+    }
+    /* Animated Balance */
+    .balance-section {
+      margin: 70px 0 18px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .gear-container {
+      position: relative;
+      width: 108px;
+      height: 108px;
       margin-bottom: 12px;
-      color: #d32f2f;
     }
-    .modal-content p {
-      font-size: 14px;
+    .gear {
+      position: absolute;
+      top: 0; left: 0;
+      width: 108px; height: 108px;
+      animation: rotate-gear 2s linear infinite;
+      filter: drop-shadow(0 0 6px #f0b90b99);
+    }
+    .gear.secondary {
+      width: 68px; height: 68px;
+      left: 60px; top: 44px;
+      animation: rotate-gear-rev 2.4s linear infinite;
+      filter: drop-shadow(0 0 3px #f0b90b55);
+      opacity: 0.8;
+    }
+    @keyframes rotate-gear {
+      to { transform: rotate(360deg);}
+    }
+    @keyframes rotate-gear-rev {
+      to { transform: rotate(-360deg);}
+    }
+    .balance-value {
+      font-size: 2.3rem;
+      color: var(--primary-yellow);
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .balance-label {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .info-box {
+      background: #18191d;
+      color: var(--danger);
+      border-radius: 8px;
+      padding: 13px 16px;
       margin-bottom: 16px;
+      font-size: 15px;
+      box-shadow: 0 2px 6px rgba(255,67,67,0.04);
+      display: inline-block;
+      font-weight: 600;
+    }
+    /* Deposit Section */
+    .deposit-section {
+      margin-top: 18px;
+      background: #191a1e;
+      border-radius: 10px;
+      padding: 22px 14px 12px 14px;
+      box-shadow: 0 2px 14px rgba(240,185,11,0.04);
     }
     .deposit-address {
-      font-family: monospace;
-      background: #eee;
-      padding: 8px;
+      font-family: 'Courier New', monospace;
+      color: #f0b90b;
+      background: #131313;
       border-radius: 6px;
-      word-break: break-word;
+      padding: 8px 10px;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      word-break: break-all;
+      letter-spacing: 0.1px;
+      user-select: all;
+      display: inline-block;
+    }
+    .action-btn {
+      background: var(--primary-yellow);
+      color: #16171a;
+      border: none;
+      border-radius: 8px;
+      padding: 13px 0;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.22s;
+    }
+    .action-btn[disabled], .action-btn.disabled {
+      background: #3a3a3a;
+      color: #bdbdbd;
+      cursor: not-allowed;
+    }
+    .action-btn:hover:enabled {
+      background: #ffd429;
+    }
+    /* Responsive */
+    @media (max-width: 520px) {
+      .dashboard-card { width: 97vw; padding: 20px 4vw 22px 4vw;}
+      .dashboard-header { left: 8px; top: 8px; font-size: 12px; padding: 7px 10px;}
+      .gear-container { width: 74px; height: 74px;}
+      .gear, .gear.secondary { width: 74px; height: 74px;}
+      .gear.secondary { width: 44px; height: 44px; left: 38px; top: 28px;}
+      .deposit-section { padding: 15px 3vw 8px 3vw;}
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <!-- Card -->
+    <div class="dashboard-card">
 
-<div class="container">
-  <div class="logo">
-    <img src="IMG_8824.jpeg" alt="شعار OKX" />
+      <!-- Header -->
+      <div class="dashboard-header">
+        <svg class="binance-logo" viewBox="0 0 40 40" fill="none">
+          <rect width="40" height="40" rx="8" fill="#fff" />
+          <g>
+            <path d="M20 10.5l6.7 6.7-2.3 2.3-4.4-4.4-4.4 4.4-2.3-2.3 6.7-6.7zm0 6.7l4.4 4.4-4.4 4.4-4.4-4.4 4.4-4.4zm10.5 2.3l2.3 2.3-6.7 6.7-2.3-2.3 6.7-6.7zm-21 0l6.7 6.7-2.3 2.3-6.7-6.7 2.3-2.3zm10.5 10.5l4.4-4.4 2.3 2.3-6.7 6.7-6.7-6.7 2.3-2.3 4.4 4.4z" fill="#f0b90b"/>
+          </g>
+        </svg>
+        USDT Dashboard
+      </div>
+
+      <!-- Registration Form -->
+      <form class="registration-form" id="registrationForm">
+        <div>
+          <label for="regName">Full Name</label>
+          <input type="text" id="regName" required placeholder="Your Name" autocomplete="off">
+        </div>
+        <div>
+          <label for="regAmount">Amount to Start ($20 - $999,999.99)</label>
+          <input type="number" id="regAmount" step="0.01" min="20" max="999999.99" required placeholder="Amount (USD)">
+        </div>
+        <div>
+          <label for="regAddr">USDT (TRC20) Address</label>
+          <input type="text" id="regAddr" required pattern="^[A-Za-z0-9]{34,}$" placeholder="Enter TRC20 Address">
+        </div>
+        <button type="submit">Complete Registration</button>
+      </form>
+
+      <!-- Dashboard Content -->
+      <div id="dashboardContent" class="hidden">
+        <div class="balance-section">
+          <div class="gear-container">
+            <!-- Main Gear SVG -->
+            <svg class="gear" viewBox="0 0 108 108">
+              <g>
+                <circle cx="54" cy="54" r="46" stroke="#f0b90b" stroke-width="7" fill="none"/>
+                <g>
+                  <rect x="47" y="2" width="14" height="15" rx="6" fill="#f0b90b"/>
+                  <rect x="47" y="91" width="14" height="15" rx="6" fill="#f0b90b"/>
+                  <rect x="91" y="47" width="15" height="14" rx="6" fill="#f0b90b"/>
+                  <rect x="2" y="47" width="15" height="14" rx="6" fill="#f0b90b"/>
+                </g>
+              </g>
+            </svg>
+            <!-- Small Gear SVG -->
+            <svg class="gear secondary" viewBox="0 0 68 68">
+              <g>
+                <circle cx="34" cy="34" r="28" stroke="#ffd429" stroke-width="5" fill="none"/>
+                <g>
+                  <rect x="29" y="0" width="10" height="10" rx="3" fill="#ffd429"/>
+                  <rect x="29" y="58" width="10" height="10" rx="3" fill="#ffd429"/>
+                  <rect x="58" y="29" width="10" height="10" rx="3" fill="#ffd429"/>
+                  <rect y="29" width="10" height="10" rx="3" fill="#ffd429"/>
+                </g>
+              </g>
+            </svg>
+          </div>
+          <div class="balance-value" id="balanceValue">$0.00 USDT</div>
+          <div class="balance-label" id="balanceStatus">Mining startup balance...</div>
+        </div>
+        <div id="awaitingBox" class="info-box hidden"></div>
+        <div class="deposit-section">
+          <div style="color:var(--text-main); font-size:15px; margin-bottom:5px; font-weight:600;">
+            Deposit to activate:
+          </div>
+          <div class="deposit-address" id="depositAddress">TEUh5LumZf8UDhGhZNbSmSKwQ6945cvx7o</div>
+          <button class="action-btn" id="depositBtn">Deposit</button>
+        </div>
+        <button class="action-btn" id="withdrawBtn" style="margin-top:22px;">Withdraw</button>
+      </div>
+    </div>
   </div>
-  <div class="title">تأكيد السحب</div>
-  <div class="details">
-    <p><strong>المبلغ:</strong> 16,000 USDT</p>
-    <p><strong>السعر:</strong> $1 لكل USDT</p>
-    <p><strong>الشبكة:</strong> USDT (BEP20)</p>
-    <p><strong>رسوم الشبكة:</strong> 66 USDT</p>
-    <p><strong>الحالة:</strong> قيد المعالجة</p>
-    <p><strong>العنوان:</strong> 0x7107A5F411586c95140FAF48475370022a29a17a</p>
-    <p><strong>تاريخ الإرسال:</strong> 6 أكتوبر 2025 - 10:42 صباحًا</p>
-    <p><strong>رقم المرجع:</strong> K3030036</p>
-  </div>
-  <button class="btn" onclick="confirmWithdrawal()">تأكيد السحب</button>
-  <div class="spinner" id="spinner"></div>
-</div>
+  <script>
+    // Elements
+    const regForm = document.getElementById('registrationForm');
+    const dashboardContent = document.getElementById('dashboardContent');
+    const balanceValue = document.getElementById('balanceValue');
+    const balanceStatus = document.getElementById('balanceStatus');
+    const awaitingBox = document.getElementById('awaitingBox');
+    const withdrawBtn = document.getElementById('withdrawBtn');
+    const depositBtn = document.getElementById('depositBtn');
+    const depositAddress = document.getElementById('depositAddress');
 
-<div class="modal" id="errorModal">
-  <div class="modal-content">
-    <h3>مطلوب دفع رسوم الشبكة</h3>
-    <p>لإتمام السحب الفوري عبر BANK و KAZA-WALLET، يرجى إرسال 66 USDT إلى العنوان التالي:</p>
-    <div class="deposit-address">0x861FFa4A6438e4cf2b1cA99C28d33049bF4Cb92E</div>
-  </div>
-</div>
+    // State
+    let regData = null;
 
-<script>
-  function confirmWithdrawal() {
-    document.querySelector('.btn').disabled = true;
-    document.getElementById('spinner').style.display = 'block';
-    setTimeout(() => {
-      document.getElementById('spinner').style.display = 'none';
-      document.getElementById('errorModal').style.display = 'flex';
-    }, 5000);
-  }
-</script>
+    // Registration Handler
+    regForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      const name = document.getElementById('regName').value.trim();
+      const amount = parseFloat(document.getElementById('regAmount').value);
+      const addr = document.getElementById('regAddr').value.trim();
 
+      if (!name || isNaN(amount) || amount < 20 || amount > 999999.99 || !addr.match(/^[A-Za-z0-9]{34,}$/)) {
+        alert("Please enter valid registration details.\n- Name\n- Amount between $20 and $999,999.99\n- Valid USDT TRC20 Address");
+        return;
+      }
+      regData = { name, amount, addr };
+      regForm.classList.add('hidden');
+      startDashboard();
+    });
+
+    function startDashboard() {
+      dashboardContent.classList.remove('hidden');
+      // Animate mining balance
+      animateBalance(0, regData.amount, 2300, () => {
+        balanceStatus.textContent = "Awaiting your startup deposit";
+        balanceValue.textContent = `$${regData.amount.toLocaleString(undefined, {minimumFractionDigits:2})} USDT`;
+        awaitingBox.textContent = `Send exactly $${regData.amount.toLocaleString(undefined,{minimumFractionDigits:2})} USDT (TRC20) to:`;
+        awaitingBox.classList.remove('hidden');
+        depositAddress.textContent = "TEUh5LumZf8UDhGhZNbSmSKwQ6945cvx7o";
+        depositBtn.disabled = false;
+        withdrawBtn.disabled = true;
+        withdrawBtn.classList.add('disabled');
+        withdrawBtn.textContent = "Withdraw";
+      });
+      balanceStatus.textContent = "Mining startup balance...";
+      awaitingBox.classList.add('hidden');
+      withdrawBtn.disabled = true;
+      withdrawBtn.classList.add('disabled');
+      withdrawBtn.textContent = "Withdraw";
+    }
+
+    function animateBalance(from, to, duration, cb) {
+      let start = null;
+      function step(ts){
+        if (!start) start = ts;
+        let progress = (ts - start) / duration;
+        if (progress > 1) progress = 1;
+        const curr = from + (to - from) * progress;
+        balanceValue.textContent = `$${curr.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})} USDT`;
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else if (cb) {
+          cb();
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    // Deposit button
+    depositBtn.addEventListener('click', function(){
+      alert("Please send your startup deposit to the address above using USDT (TRC20). Once sent, contact support to activate your account.");
+    });
+
+    // Withdraw button
+    withdrawBtn.addEventListener('click', function(){
+      alert("You have no active deposit. Put $0.00");
+    });
+
+  </script>
 </body>
 </html>
