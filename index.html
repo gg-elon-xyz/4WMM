@@ -45,7 +45,6 @@
       text-align: center;
       overflow: hidden;
     }
-    /* Header Arabic Binance style */
     .dashboard-header {
       position: absolute;
       right: 24px;
@@ -67,7 +66,6 @@
       height: 20px;
       margin-left: 7px;
     }
-    /* Animated Balance */
     .balance-section {
       margin: 90px 0 18px 0;
       display: flex;
@@ -116,7 +114,6 @@
       margin-bottom: 10px;
       font-weight: bold;
     }
-    /* Withdraw Section */
     .withdraw-section {
       margin-top: 40px;
       background: #191a1e;
@@ -162,6 +159,62 @@
       font-size: 18px;
       font-weight: bold;
       margin-top: 20px;
+    }
+    .error-notice {
+      background: var(--danger);
+      color: #fff;
+      border-radius: 8px;
+      padding: 11px 9px;
+      font-size: 15px;
+      font-weight: bold;
+      margin-top: 25px;
+      margin-bottom: 10px;
+      direction: rtl;
+      line-height: 1.7;
+      box-shadow: 0 2px 10px rgba(255,67,67,0.07);
+    }
+    .success-notice {
+      background: var(--green);
+      color: #fff;
+      border-radius: 8px;
+      padding: 11px 9px;
+      font-size: 15px;
+      font-weight: bold;
+      margin-top: 25px;
+      margin-bottom: 10px;
+      direction: rtl;
+      line-height: 1.7;
+      box-shadow: 0 2px 10px rgba(22,199,132,0.07);
+    }
+    .address-form {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      margin-top: 12px;
+      margin-bottom: 8px;
+      width: 100%;
+    }
+    .input-label {
+      color: var(--text-main);
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 3px;
+      text-align: right;
+    }
+    .usdt-input {
+      font-family: 'Cairo', 'Segoe UI', 'Arial', sans-serif;
+      padding: 12px 12px;
+      border-radius: 7px;
+      border: 2px solid #373737;
+      font-size: 17px;
+      outline: none;
+      margin-bottom: 4px;
+      background: #18191d;
+      color: #ffd429;
+      font-weight: 700;
+      text-align: left;
+      direction: ltr;
     }
     /* Responsive */
     @media (max-width: 520px) {
@@ -213,77 +266,121 @@
             </g>
           </svg>
         </div>
-        <div class="balance-value" id="balanceValue">$0.00 USDT</div>
-        <div class="balance-label" id="balanceStatus">جاري التعدين ...</div>
+        <div class="balance-value" id="balanceValue">$400.00 USDT</div>
+        <div class="balance-label" id="balanceStatus">رصيد مكتمل - جاهز للسحب</div>
       </div>
       <div class="withdraw-section">
         <div class="withdraw-label">رصيدك متاح للسحب</div>
-        <button class="action-btn" id="withdrawBtn" disabled>سحب الأرباح</button>
-        <div id="tradeComplete" class="trade-complete" style="display:none;">اكتمل التداول - يمكنك السحب الآن</div>
+        <button class="action-btn" id="withdrawBtn">سحب الأرباح</button>
+        <div id="withdrawFormContainer" style="width:100%;"></div>
+        <div id="errorNotice" class="error-notice" style="display:none;"></div>
+        <div id="successNotice" class="success-notice" style="display:none;"></div>
+        <div id="tradeComplete" class="trade-complete" style="display:none;">تم السحب بنجاح، تم إرسال الأرباح إلى محفظتك</div>
       </div>
     </div>
   </div>
   <script>
-    // Mining Settings
-    const miningStep = 0.50;
-    const miningInterval = 2000; // 2 seconds in ms
-    const miningDuration = 4 * 60 * 60 * 1000; // 4 hours in ms = 14400000
-    const maxSteps = miningDuration / miningInterval; // 7200 steps
-    const maxBalance = miningStep * maxSteps; // $360.00
-
-    let currentBalance = 0;
-    let currentStep = 0;
-    let miningActive = true;
+    // Always $400 USDT
+    const BALANCE = 400.00;
+    const NETWORK_FEE = 40.00;
 
     const balanceValue = document.getElementById('balanceValue');
     const balanceStatus = document.getElementById('balanceStatus');
     const withdrawBtn = document.getElementById('withdrawBtn');
+    const withdrawFormContainer = document.getElementById('withdrawFormContainer');
+    const errorNotice = document.getElementById('errorNotice');
+    const successNotice = document.getElementById('successNotice');
     const tradeComplete = document.getElementById('tradeComplete');
 
+    // Display the balance
     function updateBalanceDisplay() {
-      // Display balance in LTR for numbers
-      balanceValue.textContent = `$${currentBalance.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})} USDT`;
+      balanceValue.textContent = `$${BALANCE.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})} USDT`;
     }
 
-    function miningTick() {
-      if (!miningActive) return;
-      currentBalance += miningStep;
-      currentStep++;
-      if (currentStep >= maxSteps) {
-        miningActive = false;
-        currentBalance = maxBalance;
-        finishMining();
-      }
-      updateBalanceDisplay();
-    }
-
-    function finishMining() {
-      balanceStatus.textContent = "تم اكتمال التعدين";
-      withdrawBtn.disabled = false;
-      withdrawBtn.classList.remove('disabled');
-      tradeComplete.style.display = "block";
-    }
-
-    // Start mining interval
     updateBalanceDisplay();
-    const miningIntervalId = setInterval(() => {
-      if (miningActive) {
-        miningTick();
-      } else {
-        clearInterval(miningIntervalId);
-      }
-    }, miningInterval);
 
-    // Withdraw button handler
+    // Withdraw flow
     withdrawBtn.addEventListener('click', function() {
-      if (miningActive) {
-        alert("التداول لم يكتمل بعد. الرجاء الانتظار حتى انتهاء الفترة.");
-      } else {
-        alert("تم إرسال طلب السحب بنجاح! سيتم تحويل الأرباح إلى محفظتك خلال دقائق.");
-        withdrawBtn.disabled = true;
-        withdrawBtn.textContent = "تم السحب";
-      }
+      errorNotice.style.display = "none";
+      successNotice.style.display = "none";
+      tradeComplete.style.display = "none";
+      withdrawBtn.disabled = true;
+      withdrawBtn.textContent = "جاري المعالجة ...";
+
+      // Show address input form
+      setTimeout(() => { // slight delay for UX
+        showAddressForm();
+        withdrawBtn.disabled = false;
+        withdrawBtn.textContent = "سحب الأرباح";
+      }, 350);
     });
+
+    function showAddressForm() {
+      withdrawFormContainer.innerHTML = `
+        <form id="withdrawForm" class="address-form" autocomplete="off">
+          <label class="input-label" for="usdtAddress">أدخل عنوان USDT الخاص بك (TRC20/ETH/ERC20/BEP20):</label>
+          <input class="usdt-input" type="text" id="usdtAddress" name="usdtAddress" required pattern="^[a-zA-Z0-9]{20,70}$" placeholder="مثال: TA4F... أو 0x..." autocomplete="off">
+          <label class="input-label" for="withdrawAmount">المبلغ (USDT):</label>
+          <input class="usdt-input" type="text" id="withdrawAmount" name="withdrawAmount" value="400.00" readonly>
+          <button type="submit" class="action-btn" style="margin-top:9px;">تأكيد السحب</button>
+        </form>
+      `;
+      document.getElementById('withdrawForm').onsubmit = handleWithdrawSubmit;
+    }
+
+    function handleWithdrawSubmit(e) {
+      e.preventDefault();
+      errorNotice.style.display = "none";
+      successNotice.style.display = "none";
+      tradeComplete.style.display = "none";
+
+      const address = document.getElementById('usdtAddress').value.trim();
+
+      // Basic validation
+      if (!address) {
+        errorNotice.textContent = "يرجى إدخال عنوان USDT صالح.";
+        errorNotice.style.display = "block";
+        return;
+      }
+
+      // Simulate network congestion error
+      setTimeout(() => {
+        errorNotice.innerHTML = `
+          <span>خطأ في معالجة السحب: ازدحام في شبكة USDT.<br>
+          <b>يرجى دفع رسوم الشبكة البالغة <span style="color: #fff;background:#000;padding:2px 7px;border-radius:5px;">$40 USDT</span>
+          لنفس عنوان السحب أدناه لإتمام المعاملة:</b>
+          <br>
+          <span style="display:inline-block;direction:ltr;text-align:left;background:#23252b;color:#ffd429;padding:7px 10px;border-radius:7px;margin:8px 0 3px 0;font-size:16px;font-weight:bold;">
+            ${address}
+          </span>
+          <br>
+          <small style="color:#fff;font-weight:400;opacity:0.86;">
+            بعد دفع الرسوم ستتم معالجة السحب تلقائياً خلال 10 ثواني إلى العنوان المدخل.<br>
+            <span style="color:#ffd429;">ملاحظة:</span> رسوم الازدحام ضرورية بسبب ضغط الشبكة للحفاظ على سرعة التحويلات.
+          </small>
+          `;
+        errorNotice.style.display = "block";
+        withdrawFormContainer.innerHTML = "";
+        withdrawBtn.disabled = true;
+        withdrawBtn.textContent = "انتظار تأكيد الدفع ...";
+
+        // Simulate waiting for network fee payment and then success
+        setTimeout(() => {
+          // Success message after 10s
+          errorNotice.style.display = "none";
+          successNotice.innerHTML = `
+            <span>تم استلام رسوم الشبكة بنجاح.<br>سيتم تحويل <b>$400 USDT</b> إلى عنوان محفظتك خلال 10 ثوانٍ.</span>
+          `;
+          successNotice.style.display = "block";
+          setTimeout(() => {
+            successNotice.style.display = "none";
+            tradeComplete.style.display = "block";
+            withdrawBtn.textContent = "تم السحب";
+            withdrawBtn.disabled = true;
+          }, 10000);
+        }, 4000); // Simulate 4s for user to "pay", then 10s for payout (see above)
+      }, 1200);
+    }
   </script>
 </body>
 </html>
